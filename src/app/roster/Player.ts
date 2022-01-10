@@ -4,9 +4,9 @@ export class Player {
   lastName: String = ""
   position: String = ""
   number: String = ""
-  ppg: String = ""
-  rpg: String = ""
-  apg: String = ""
+  pointPerMatch: String = ""
+  reboundPerMatch: String = ""
+  assistPerMatch: String = ""
   totalCost: String = ""
 
   constructor(
@@ -25,9 +25,9 @@ export class Player {
     this.lastName = lastName
     this.position = position
     this.number = number
-    this.ppg = ppg
-    this.rpg = rpg
-    this.apg = apg
+    this.pointPerMatch = ppg
+    this.reboundPerMatch = rpg
+    this.assistPerMatch = apg
     this.totalCost = totalCost
   }
 }
