@@ -1,1 +1,41 @@
-<p>roster works!</p>
+<div [class]="isLoading ? 'is-visible' : 'is-hidden'"><span class="title">Loading data players...</span></div>
+
+<div class="table-container">
+  <table *ngIf="!isLoading" class="table">
+
+
+    <thead>
+    <tr>
+      <th>Name</th>
+      <th>Team</th>
+      <th><abbr title="Position">Position</abbr></th>
+      <th><abbr title="Point per game">PPG</abbr></th>
+      <th><abbr title="Rebound per game">RPG</abbr></th>
+      <th><abbr title="Assist per game">APG</abbr></th>
+      <th><abbr title="Total cost">Total cost</abbr></th>
+    </tr>
+    </thead>
+    <tfoot>
+    <tr>
+      <th>Name</th>
+      <th>Team</th>
+      <th><abbr title="Position">Position</abbr></th>
+      <th><abbr title="Point per game">PPG</abbr></th>
+      <th><abbr title="Rebound per game">RPG</abbr></th>
+      <th><abbr title="Assist per game">APG</abbr></th>
+      <th><abbr title="Total cost">Total cost</abbr></th>
+    </tr>
+    </tfoot>
+    <tbody>
+    <tr *ngFor="let player of players">
+      <th>{{player.firstName}} - {{player.lastName}} - {{player.number}}</th>
+      <td>{{player.team}}</td>
+      <td>{{player.position}}</td>
+      <td>{{player.ppg}}</td>
+      <td>{{player.rpg}}</td>
+      <td>{{player.apg}}</td>
+      <td>{{player.totalCost}}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {Player} from "./Player";
 
 @Component({
   selector: 'app-roster',
@@ -7,9 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class RosterComponent implements OnInit {
 
-  players = []
+  players: Player[] = []
+  isLoading: boolean = true
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
 
@@ -20,7 +23,24 @@ export class RosterComponent implements OnInit {
         mode: 'cors',
         cache: 'default'
       }
-    ).then(r => console.log(r.json()))
+    ).then(r => {
+      r.json().then(dataPlayers => {
+        this.players = dataPlayers.map((data: Player) => {
+            return new Player(
+              data.firstName,
+              data.team,
+              data.lastName,
+              data.position,
+              data.number,
+              data.ppg,
+              data.rpg,
+              data.apg,
+              data.totalCost,
+            )
+        })
+        this.isLoading = false
+      })
+    })
   }
 
 }
