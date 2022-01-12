@@ -1,3 +1,33 @@
-<a routerLink="/roster">Roster</a>
+<div class="container">
+  <nav class="navbar">
+    <div class="navbar-menu">
+      <div class="navbar-brand">
+        <a class="navbar-item">
+          <img src="/assets/logo%202.PNG" width="100" height="203">
+        </a>
+      </div>
+
+      <div class="navbar-start">
+
+        <a *ngIf="!isUserConnected" class="navbar-item" (click)="openConnectionModal()">Log in</a>
+        <a *ngIf="isUserConnected" class="navbar-item" (click)="signOut()">Log out</a>
+
+        <a class="navbar-item" routerLink="/roster">Your roster</a>
+
+      </div>
+    </div>
+  </nav>
+
+</div>
+
+<div [class]="isModalVisible ? 'modal is-active' : 'is-hidden'">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <div class="box">
+      <button class="button" (click)="signInWithGoogle()">Log in with Google</button>
+    </div>
+  </div>
+  <button class="modal-close is-large" aria-label="close" (click)="closeConnectionModal()"></button>
+</div>
 
 <router-outlet></router-outlet>

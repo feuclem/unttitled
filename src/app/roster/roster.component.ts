@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {Player} from "./Player";
-import {Roster} from "./Roster";
 import {LightPlayer} from "./LightPlayer";
 
 @Component({
@@ -18,7 +17,12 @@ export class RosterComponent implements OnInit {
   powerForward: LightPlayer = new LightPlayer()
   center: LightPlayer = new LightPlayer()
 
+  positionSorting: String = ""
+  priceSorting: String = ""
+
   isLoading: boolean = true
+  isOutOfCreditMessageVisible: boolean = false
+  isImpossibleToAddPlayerMessageVisible: boolean = false
 
   constructor() {
   }
@@ -52,6 +56,9 @@ export class RosterComponent implements OnInit {
   }
 
   addTitularPlayer(firstName: String, lastName: String, team: String) {
+    this.isOutOfCreditMessageVisible = false
+    this.isImpossibleToAddPlayerMessageVisible = false
+
     let addTitularPlayerParameters = {
       userId: "1",
       firstName: firstName,
@@ -67,27 +74,38 @@ export class RosterComponent implements OnInit {
         body: JSON.stringify(addTitularPlayerParameters)
       }
     ).then(r => {
-      r.json().then(data => {
-        data.titularPlayers.forEach((player => {
-            if (player.position === "POINT_GUARD") {
-              this.pointGuard = new LightPlayer(player.firstName, player.lastName, player.team, player.position)
-            } else if (player.position === "SHOOTING_GUARD") {
-              this.shootingGuard = new LightPlayer(player.firstName, player.lastName, player.team, player.position)
-            } else if (player.position === "SMALL_FORWARD") {
-              this.smallForward = new LightPlayer(player.firstName, player.lastName, player.team, player.position)
-            } else if (player.position === "POWER_FORWARD") {
-              this.powerForward = new LightPlayer(player.firstName, player.lastName, player.team, player.position)
-            } else {
-              this.center = new LightPlayer(player.firstName, player.lastName, player.team, player.position)
-            }
-          }),
-        )
-        this.isLoading = false
-      })
+      if(r.status != 400) {
+        r.json().then(data => {
+          data.titularPlayers.forEach((player => {
+              if (player.position === "POINT_GUARD") {
+                this.pointGuard = new LightPlayer(player.firstName, player.lastName, player.team, player.position)
+              } else if (player.position === "SHOOTING_GUARD") {
+                this.shootingGuard = new LightPlayer(player.firstName, player.lastName, player.team, player.position)
+              } else if (player.position === "SMALL_FORWARD") {
+                this.smallForward = new LightPlayer(player.firstName, player.lastName, player.team, player.position)
+              } else if (player.position === "POWER_FORWARD") {
+                this.powerForward = new LightPlayer(player.firstName, player.lastName, player.team, player.position)
+              } else {
+                this.center = new LightPlayer(player.firstName, player.lastName, player.team, player.position)
+              }
+            }),
+          )
+          this.isLoading = false
+        })
+      } else {
+        r.json().then(data => {
+          if(data['message'] === "OUT_OF_CREDIT") this.isOutOfCreditMessageVisible = true
+          if(data['message'] === "IMPOSSIBLE_TO_UPDATE_ROSTER") this.isOutOfCreditMessageVisible = true
+        })
+
+      }
     })
   }
 
   removeTitularPlayer(lightPlayer: LightPlayer) {
+    this.isOutOfCreditMessageVisible = false
+    this.isImpossibleToAddPlayerMessageVisible = false
+
     let removeTitularPlayerParameters = {
       userId: "1",
       firstName: lightPlayer.firstName,
@@ -115,6 +133,45 @@ export class RosterComponent implements OnInit {
         this.center = new LightPlayer()
       }
       this.isLoading = false
+    })
+  }
+
+  filterPlayerPosition(position: String) {
+    this.positionSorting = position
+    this.filterPlayer()
+  }
+
+  filterPlayerPrice(price: String) {
+    this.priceSorting = price
+    this.filterPlayer()
+  }
+
+  private filterPlayer() {
+    this.isLoading = true
+    window.fetch('http://localhost:8080/players/filter?position='+this.positionSorting+'&price='+this.priceSorting,
+      {
+        method: 'GET',
+        headers: new Headers(),
+        mode: 'cors',
+        cache: 'default'
+      }
+    ).then(r => {
+      r.json().then(dataPlayers => {
+        this.players = dataPlayers.map((data: Player) => {
+          return new Player(
+            data.firstName,
+            data.team,
+            data.lastName,
+            data.position,
+            data.number,
+            data.pointPerMatch,
+            data.reboundPerMatch,
+            data.assistPerMatch,
+            data.totalCost,
+          )
+        })
+        this.isLoading = false
+      })
     })
   }
 

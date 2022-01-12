@@ -1,53 +1,115 @@
-<div [class]="isLoading ? 'pageloader is-active is-visible' : 'is-hidden'"><span class="title">Loading data players...</span></div>
+<div class="container">
 
-<div class="columns">
-  <div class="column">
-    <div class="table-container">
-      <table *ngIf="!isLoading" class="table">
-        <thead>
-        <tr>
-          <th>Fullname - Number</th>
-          <th>Team</th>
-          <th><abbr title="Position">Position</abbr></th>
-          <th><abbr title="Point per game">PPG</abbr></th>
-          <th><abbr title="Rebound per game">RPG</abbr></th>
-          <th><abbr title="Assist per game">APG</abbr></th>
-          <th><abbr title="Total cost">Total cost</abbr></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let player of players" [class]="player.team + '_FIRST_COLOR' " (click)="addTitularPlayer(player.firstName, player.lastName, player.team)" >
-          <th>{{player.firstName}} {{player.lastName}} - {{player.number}}</th>
-          <td>{{player.team}}</td>
-          <td>{{player.position}}</td>
-          <td>{{player.pointPerMatch}}</td>
-          <td>{{player.reboundPerMatch}}</td>
-          <td>{{player.assistPerMatch}}</td>
-          <td>{{player.totalCost}}</td>
-        </tr>
-        </tbody>
-      </table>
+  <div [class]="isLoading ? 'pageloader is-active is-visible box' : 'is-hidden'">
+    <progress class="progress is-large is-info" max="100">60%</progress>
+  </div>
+
+  <div *ngIf="!isLoading" class="box">
+    <div class="columns">
+      <div class="column is-1">
+        <div class="field">
+          <label class="label">Filters :</label>
+        </div>
+      </div>
+
+      <div class="column is-2">
+        <div class="field">
+          <label class="label">By position</label>
+          <div class="control">
+            <div class="select">
+              <select (change)="filterPlayerPosition($any($event.target).value)">
+                <option>POINT_GUARD</option>
+                <option>SHOOTING_GUARD</option>
+                <option>SMALL_FORWARD</option>
+                <option>POWER_FORWARD</option>
+                <option>CENTER</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="column is-2">
+        <div class="field">
+          <label class="label">Sorting price</label>
+          <div class="control">
+            <div class="select">
+              <select (change)="filterPlayerPrice($any($event.target).value)">
+                <option>ASC</option>
+                <option>DESC</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="column">
-    <article class="message">
-      <div class="message-header">
-        <p>Roster</p>
-        <button class="delete" aria-label="delete"></button>
-      </div>
-      <div class="message-body">
-        POINT_GUARD : {{pointGuard.display()}} <button (click)="removeTitularPlayer(pointGuard)" class="delete"></button>
-        <br />
-        SHOOTING_GUARD : {{shootingGuard.display()}} <button (click)="removeTitularPlayer(shootingGuard)" class="delete"></button>
-        <br />
-        SMALL_FORWARD : {{smallForward.display()}} <button (click)="removeTitularPlayer(smallForward)" class="delete"></button>
-        <br />
-        POWER_FORWARD : {{powerForward.display()}} <button (click)="removeTitularPlayer(powerForward)" class="delete"></button>
-        <br />
-        CENTER : {{center.display()}} <button (click)="removeTitularPlayer(center)" class="delete"></button>
-        <br />
-      </div>
-    </article>
-  </div>
-</div>
 
+  <div *ngIf="!isLoading" class="box">
+    <div class="columns">
+      <div class="column">
+        <div class="table-container">
+          <table class="table">
+            <thead>
+            <tr>
+              <th>Fullname - Number</th>
+              <th>Team</th>
+              <th><abbr title="Position">Position</abbr></th>
+              <th><abbr title="Point per game">PPG</abbr></th>
+              <th><abbr title="Rebound per game">RPG</abbr></th>
+              <th><abbr title="Assist per game">APG</abbr></th>
+              <th><abbr title="Total cost">Total cost</abbr></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let player of players" [class]="player.team + '_FIRST_COLOR' "
+                (click)="addTitularPlayer(player.firstName, player.lastName, player.team)">
+              <th>{{player.firstName}} {{player.lastName}} - {{player.number}}</th>
+              <td>{{player.team}}</td>
+              <td>{{player.position}}</td>
+              <td>{{player.pointPerMatch}}</td>
+              <td>{{player.reboundPerMatch}}</td>
+              <td>{{player.assistPerMatch}}</td>
+              <td>{{player.totalCost}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="column">
+        <div *ngIf="isOutOfCreditMessageVisible" class="notification is-danger">
+          Out of credit allowed to add player in your roster !
+        </div>
+        <div *ngIf="isImpossibleToAddPlayerMessageVisible" class="notification is-warning">
+          You already have a player with this position in your roster ! <br/>
+          Remove him first before re-add !
+        </div>
+
+        <article class="message">
+          <div class="message-header">
+            <p>Your roster :</p>
+            <button class="delete" aria-label="delete"></button>
+          </div>
+          <div class="message-body">
+            POINT_GUARD : {{pointGuard.display()}}
+            <button (click)="removeTitularPlayer(pointGuard)" class="delete"></button>
+            <br/>
+            SHOOTING_GUARD : {{shootingGuard.display()}}
+            <button (click)="removeTitularPlayer(shootingGuard)" class="delete"></button>
+            <br/>
+            SMALL_FORWARD : {{smallForward.display()}}
+            <button (click)="removeTitularPlayer(smallForward)" class="delete"></button>
+            <br/>
+            POWER_FORWARD : {{powerForward.display()}}
+            <button (click)="removeTitularPlayer(powerForward)" class="delete"></button>
+            <br/>
+            CENTER : {{center.display()}}
+            <button (click)="removeTitularPlayer(center)" class="delete"></button>
+            <br/>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+
+</div>
